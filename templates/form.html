@@ -1,0 +1,193 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div id="form-content">
+  <h1>Podcast</h1>
+  <form id="form-content-form">
+    <!-- 2 column grid layout with text inputs for the first and last names -->
+    <div class="form-outline mb-4">
+        <label class="form-label" for="title">Title</label>
+        <input type="text" id="title" class="form-control" />
+    </div>
+  
+    <!-- Text input -->
+    <div class="form-outline mb-4">
+        <label class="form-label" for="podcastName">Podcast Name</label>
+        <input type="text" id="podcastName" class="form-control" />
+    </div>
+  
+    <!-- Text input -->
+    <div class="form-outline mb-4">
+      <label class="form-label" for="poadcastImageUrl">Podcast Image URL</label>
+      <input type="text" id="poadcastImageUrl" class="form-control" />
+    </div>
+  
+    <!-- Email input -->
+    <div class="form-outline mb-4">
+      <label class="form-label" for="epsiodeLink">Episode Link</label>
+      <input type="text" id="episodeLink" class="form-control" />
+    </div>
+  
+    <!-- Number input -->
+    <div class="form-outline mb-4">
+      <label class="form-label" for="episodeDate">Date</label>
+      <input type="text" id="episodeDate" class="form-control" />
+    </div>
+  
+     <!-- Email input -->
+     <div class="form-outline mb-4">
+      <label class="form-label" for="audioUrl">Audio Url</label>
+      <input type="text" id="audioUrl" class="form-control" />
+    </div>
+  
+
+    <!-- Message input -->
+    <div class="form-outline mb-4">
+      <label class="form-label" for="episodeDetails">Episode Details</label>
+      <textarea class="form-control" id="episodeDetails" rows="4"></textarea>
+    </div>
+  
+    <!-- Submit button -->
+    <button type="button" id="submit-button" class="btn btn-primary btn-block mb-4">Submit</button>
+  </form>
+</div>
+
+<script>
+
+  let url = window.location.href.split( '/' );
+  let path = url[url.length - 2];
+  
+  if (path == "edit") {
+    let data = {{data|tojson}};
+    console.log(data);
+    $("#title").val(data["title"]);
+    $("#podcastName").val(data["podcast_name"]);
+    $("#poadcastImageUrl").val(data["podcast_image_url"]);
+    $("#episodeLink").val(data["podcast_name"]);
+    $("#episodeDate").val(data["date"]);
+    $("#episodeDetails").val(data["description"]);
+    $("#audioUrl").val(data["url"]);
+    $("#form-content-form").append("<button id='discard-button' type='button' class='btn btn-primary btn-block mb-4'>Discard Changes</button>")
+   
+    $("#discard-button").click(function(){
+      if (confirm("Are you sure you want to discard?")) {
+        window.location.assign("/detail/" + data["id"]);
+      } else {
+        console.log("cancel")
+      }
+    });
+
+    function edit_item() {
+      let data = {{data|tojson}};
+      let count = data["id"]      
+      var title = $("#title").val();
+      var podcast_name = $("#podcastName").val();
+      var podcast_image_url = $("#poadcastImageUrl").val();
+      var episode_link = $("#episodeLink").val();
+      var episode_date = $("#episodeDate").val();
+      var episode_details = $("#episodeDetails").val();
+      var episode_audio = $("#audioUrl").val();
+      
+      var object = {
+        "title": title,
+        "description": episode_details,
+        "podcast_name": podcast_name,
+        "podcast_image_url": podcast_image_url,
+        "episode_link": episode_link,
+        "id": count,
+        "date": episode_date,
+        "url": episode_audio
+      };
+      console.log(object);
+      var jsonStringified = JSON.stringify(object);
+      $.ajax({
+        type: "POST",
+        url: "additem",                
+        dataType : "json",
+        contentType: "application/json; charset=utf-8",
+        data : jsonStringified,
+        success: function(result) {
+            console.log(result.data);
+            window.location.assign("/detail/" + count);
+        },
+        error: function(request, status, error){
+            console.log("Error");
+            console.log(request);
+            console.log(status);
+            console.log(error);
+        }
+      });
+    }
+
+    $("#submit-button").click(function(){
+      edit_item();
+    });
+  
+  } else {
+
+    function save_new_sale() {
+      let count = {{possible_id}}
+      console.log(count);
+      
+      var title = $("#title").val();
+      var podcast_name = $("#podcastName").val();
+      var podcast_image_url = $("#poadcastImageUrl").val();
+      var episode_link = $("#episodeLink").val();
+      var episode_date = $("#episodeDate").val();
+      var episode_details = $("#episodeDetails").val();
+      var episode_audio = $("#audioUrl").val();
+      
+      var object = {
+        "title": title,
+        "description": episode_details,
+        "podcast_name": podcast_name,
+        "podcast_image_url": podcast_image_url,
+        "episode_link": episode_link,
+        "id": count,
+        "date": episode_date,
+        "url": episode_audio
+      };
+      console.log(object);
+      var jsonStringified = JSON.stringify(object);
+      $.ajax({
+        type: "POST",
+        url: "additem",                
+        dataType : "json",
+        contentType: "application/json; charset=utf-8",
+        data : jsonStringified,
+        success: function(result) {
+            console.log(result.data);
+            $("#form-content").prepend("<h1 id='sucess' style='color:green !important;'>Added successfully!</h1>")
+            window.setTimeout(removeSuccess, 5000 );
+            $("#title").val("");
+            $("#podcastName").val("");
+            $("#poadcastImageUrl").val("");
+            $("#episodeLink").val("");
+            $("#episodeDate").val("");
+            $("#episodeDetails").val("");
+            $("#audioUrl").val("");
+            console.log({{possible_id}})
+        },
+        error: function(request, status, error){
+            console.log("Error");
+            console.log(request);
+            console.log(status);
+            console.log(error);
+        }
+      });
+    }
+
+    function removeSuccess() {
+       $('#sucess').remove()
+    }
+
+
+    $("#submit-button").click(function(){
+      save_new_sale();
+    });
+  }
+</script>
+
+
+{% endblock %}

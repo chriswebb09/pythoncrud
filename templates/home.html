@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h1 id="header">Russia Security Podcasts List</h1>
+
+<div class="row" id="content">
+    <div class="col">
+        <div class="row">
+            <h3 id="top-episode-header">Top Three Episodes:</h3>
+        </div>
+        <div class="row">
+            <div class="col" id="content-row">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let data = {{ data|tojson }}
+    $(document).ready(function() {
+    
+        $("#content-row").append("<div class='row' id='cards'>");
+        $.each(data, function(i, item) {
+            let html_card = $("<div class='col-sm-3 card' id='card-item'>");
+            let title = item["title"];
+            let id = item["id"];
+            let url_iamge= item["podcast_image_url"]
+            let image = "<img class='card-img-top' src=" + url_iamge + "alt='Card image cap'>"
+            html_card.append(image);
+            let html_card_content = $("<div class='card-body'>");
+            html_card_content.text(title);
+            html_card.append(html_card_content);
+             $("#cards").append(html_card);
+             $(html_card).click(function() {
+                window.location.assign("/detail/" + id);
+            });
+        })
+    });
+</script>
+
+{% endblock %}

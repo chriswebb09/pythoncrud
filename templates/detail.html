@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div id="content">
+    <div id="details-content"></div>
+</div>
+
+<script>
+    let data = {{data|tojson}}
+
+    $(document).ready(function() {
+        
+
+        let url_iamge= data["podcast_image_url"]
+        let image = "<img class='row podcast-image' src=" + url_iamge + "alt='Card image cap'>"
+
+        let html_item_title = $("<h2 class='row'>")
+        $(html_item_title).text(data["title"])
+
+        let html_item_date = $("<div class='row item_date'>")
+        $(html_item_date).text(data["date"])
+
+       
+
+        let html_link = $("<a class='row episode_link' href=" + data["episode_link"] + ">Episode Page</a>")
+
+        let html_item_description = $("<div class='row item_description'>")
+        $(html_item_description).text(data["description"])
+        $("#details-content").append(image);
+        $("#details-content").append(html_item_title);
+        $("#details-content").append(html_item_date);
+        $("#details-content").append(html_link);
+        $("#details-content").append(html_item_description);
+
+        
+        let html_div = $("<div class='row'>")
+        $("#details-content").append(html_div)
+        let audio =  "<audio controls class='col' src=" + data["url"] + "> audio </audio>"
+        $("#details-content").append(audio)
+
+        var id = data["id"]
+        let edit = "/edit/" + id
+        let html_edit_button = $("<form class='col' action=" + edit + "><button class='btn btn-primary'>Edit</button></form>")
+        $("#details-content").append(html_edit_button)
+        $("#details-content").append("</div>")
+
+    });
+</script>
+
+{% endblock %}

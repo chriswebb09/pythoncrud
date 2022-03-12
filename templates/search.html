@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2 id="results_header">Search results for: {{ search }} </h2>
+<div id="content">
+    <div class="row">
+        <div class="col" id="content-row">
+        </div>
+    </div>
+</div>
+
+<script>
+
+let data = {{ data|tojson }}
+
+$(document).ready(function() {
+        if (!data || data.length == 0) {
+            let html_item = $("<h2>No Results</h2>");
+            $("#content").append(html_item)
+        } else {
+            let count = data.length;
+            let html_item = $("<h2 id='results-count'>" + count + " " + "results </h2>");
+            $("#content-row").append(html_item)
+            $("#content-row").append("<div class='row' id='cards'>");
+            $.each(data, function(i, item) {
+                let html_card = $("<div class='col-sm-3 card' id='card-item'>");
+                let title = item["title"];
+                let id = item["id"];
+                let url_iamge= item["podcast_image_url"];
+                let image = "<img class='card-img-top' src=" + url_iamge + "alt='Card image cap'>";
+                html_card.append(image);
+                let html_card_content = $("<div class='card-body'>");
+                html_card_content.text(title);
+                html_card.append(html_card_content);
+                $("#cards").append(html_card);
+                $(html_card).click(function() {
+                    window.location.assign("/detail/" + id);
+                });
+            });
+        }
+});
+
+</script>
+
+{% endblock %}
